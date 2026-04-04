@@ -14,7 +14,7 @@ export function useList(listId: string) {
     queryKey: ['lists', listId],
     queryFn: () => listsService.getById(listId).then((r) => r.data),
     enabled: !!listId,
-    refetchInterval: 1000 * 20, // cada 20s: otro familiar puede modificar la lista
+    refetchInterval: 1000 * 20, // cada 20s: refetch modificación de la lista
   });
 }
 
