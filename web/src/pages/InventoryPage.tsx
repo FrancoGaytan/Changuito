@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Search,
   Plus,
@@ -295,13 +295,13 @@ export function InventoryPage() {
                   >
                     <Minus className="w-4 h-4" />
                   </button>
-                  <span
-                    className={`text-sm font-bold w-8 text-center ${
-                      product.stock === 0 ? 'text-red-500' : 'text-stone-700'
-                    }`}
-                  >
-                    {product.stock}
-                  </span>
+                  <StockInput
+                    stock={product.stock}
+                    isZero={product.stock === 0}
+                    onCommit={(val) =>
+                      updateStock.mutate({ productId: product.id, stock: val })
+                    }
+                  />
                   <button
                     onClick={() =>
                       updateStock.mutate({
@@ -328,5 +328,42 @@ export function InventoryPage() {
         </div>
       )}
     </div>
+  );
+}
+
+function StockInput({
+  stock,
+  isZero,
+  onCommit,
+}: {
+  stock: number;
+  isZero: boolean;
+  onCommit: (val: number) => void;
+}) {
+  const [inputVal, setInputVal] = useState(String(stock));
+
+  useEffect(() => {
+    setInputVal(String(stock));
+  }, [stock]);
+
+  const commit = () => {
+    const parsed = parseInt(inputVal, 10);
+    if (!isNaN(parsed) && parsed >= 0) {
+      onCommit(parsed);
+    } else {
+      setInputVal(String(stock));
+    }
+  };
+
+  return (
+    <input
+      type="number"
+      min={0}
+      value={inputVal}
+      onChange={(e) => setInputVal(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
+      className={`text-sm font-bold w-8 text-center bg-transparent border-none outline-none appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] cursor-pointer focus:cursor-text ${isZero ? 'text-red-500' : 'text-stone-700'}`}
+    />
   );
 }

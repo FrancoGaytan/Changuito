@@ -15,7 +15,6 @@ export function JoinFamilyPage() {
     if (!code || attempted) return;
 
     if (!isAuthenticated) {
-      // Save code and redirect to login
       sessionStorage.setItem('pendingJoinCode', code);
       navigate('/login', { replace: true });
       return;

@@ -1,6 +1,9 @@
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { useForgotPassword } from '@/features/auth/hooks/useAuth';
+import { authLocale } from '@/locale/authLocale';
+
+const l = authLocale;
 
 interface ForgotForm {
   email: string;
@@ -20,7 +23,7 @@ export function ForgotPasswordPage() {
           <div className="w-16 h-16 bg-white/25 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
             <span className="text-3xl">🛒</span>
           </div>
-          <h1 className="font-brand text-3xl text-white drop-shadow-sm">Changuito</h1>
+          <h1 className="font-brand text-3xl text-white drop-shadow-sm">{l.brand}</h1>
           <p className="text-teal-100 text-[10px] uppercase tracking-[0.25em] mt-1">Organización Digital</p>
         </div>
 
@@ -29,36 +32,36 @@ export function ForgotPasswordPage() {
           {forgot.isSuccess ? (
             <div className="text-center py-2">
               <div className="text-5xl mb-4">📬</div>
-              <h2 className="text-lg font-bold text-stone-800 mb-2">¡Revisá tu correo!</h2>
+              <h2 className="text-lg font-bold text-stone-800 mb-2">{l.forgot.success.title}</h2>
               <p className="text-stone-400 text-sm leading-relaxed">
-                Si el email existe en nuestra base de datos, recibiste un enlace para restablecer tu contraseña.
+                {l.forgot.success.description}
               </p>
               <Link
                 to="/login"
                 className="mt-6 inline-block text-teal-600 text-sm font-medium hover:underline"
               >
-                ← Volver al login
+                {l.forgot.success.backLink}
               </Link>
             </div>
           ) : (
             <>
-              <h2 className="text-xl font-bold text-stone-800 mb-2">¿Olvidaste tu contraseña?</h2>
+              <h2 className="text-xl font-bold text-stone-800 mb-2">{l.forgot.title}</h2>
               <p className="text-stone-400 text-sm leading-relaxed mb-6">
-                Ingresá tu email para recibir un enlace de recuperación.
+                {l.forgot.description}
               </p>
 
               <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
                 <div>
-                  <label htmlFor="forgot-email" className="text-[11px] font-medium text-stone-500 block mb-1">Email</label>
+                  <label htmlFor="forgot-email" className="text-[11px] font-medium text-stone-500 block mb-1">{l.forgot.email.label}</label>
                   <input
                     id="forgot-email"
                     type="email"
                     autoComplete="email"
-                    placeholder="ejemplo@correo.com"
+                    placeholder={l.forgot.email.placeholder}
                     className="w-full px-3 py-2.5 rounded-lg border border-stone-200 bg-stone-50 text-sm text-stone-800 placeholder:text-stone-300 outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400 transition-shadow"
                     {...register('email', {
-                      required: 'El email es obligatorio',
-                      pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Email inválido' },
+                      required: l.forgot.email.errors.required,
+                      pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: l.forgot.email.errors.pattern },
                     })}
                   />
                   {errors.email && <p className="text-red-500 text-[11px] mt-1">{errors.email.message}</p>}
@@ -66,7 +69,7 @@ export function ForgotPasswordPage() {
 
                 {forgot.error && (
                   <p role="alert" className="text-red-500 text-xs text-center bg-red-50 rounded-lg py-2">
-                    Algo salió mal. Intentá de nuevo.
+                    {l.forgot.serverError}
                   </p>
                 )}
 
@@ -75,13 +78,13 @@ export function ForgotPasswordPage() {
                   disabled={forgot.isPending}
                   className="w-full bg-green-700 hover:bg-green-800 active:scale-[.98] disabled:opacity-50 text-white font-semibold py-2.5 rounded-lg text-sm transition-all cursor-pointer"
                 >
-                  {forgot.isPending ? 'Enviando...' : 'Enviar Enlace →'}
+                  {forgot.isPending ? l.forgot.submit.pending : l.forgot.submit.default}
                 </button>
               </form>
 
               <div className="text-center mt-5">
                 <Link to="/login" className="text-stone-400 text-sm hover:text-stone-600 transition-colors">
-                  ← Volver al login
+                  {l.forgot.backToLogin}
                 </Link>
               </div>
             </>

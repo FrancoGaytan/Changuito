@@ -5,6 +5,7 @@ export function useFamily() {
   return useQuery({
     queryKey: ['family'],
     queryFn: () => familyService.getGroup().then((r) => r.data),
+    refetchInterval: 1000 * 60, // cada 60s: ve si se unió un nuevo familiar
   });
 }
 

@@ -22,6 +22,9 @@ import {
 } from "@/features/lists/hooks/useLists";
 import { useProducts } from "@/features/inventory/hooks/useInventory";
 import type { Product } from "@/types";
+import { useFeedback } from "@/context/FeedbackContext";
+import { useModal } from "@/hooks/useModal";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 export function ListDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -33,14 +36,19 @@ export function ListDetailPage() {
   const deleteList = useDeleteList();
   const navigate = useNavigate();
 
-  const handleDelete = () => {
-    if (window.confirm("¿Estás seguro de que deseas eliminar esta lista?")) {
-      deleteList.mutate(id!, {
-        onSuccess: () => {
-          navigate("/mis-listas");
-        },
-      });
-    }
+  const handleDelete = async () => {
+    const ok = await confirm({
+      title: '¿Eliminar lista?',
+      message: '¿Estás seguro de que deseas eliminar esta lista? Esta acción no se puede deshacer.',
+      confirmLabel: 'Eliminar',
+      danger: true,
+    });
+    if (!ok) return;
+    deleteList.mutate(id!, {
+      onSuccess: () => {
+        navigate("/mis-listas");
+      },
+    });
   };
 
   const [showInventory, setShowInventory] = useState(false);
@@ -49,6 +57,8 @@ export function ListDetailPage() {
   // Draft State
   const updateItem = useUpdateItem(id!);
   const closeList = useCloseList(id!);
+  const { showFeedback } = useFeedback();
+  const { modalState, confirm } = useModal();
 
   const [draftItems, setDraftItems] = useState<
     Record<
@@ -184,7 +194,13 @@ export function ListDetailPage() {
       failed: d.failed || false,
     }));
     syncItemsMutation.mutate(payload, {
-      onSuccess: () => setIsDirty(false),
+      onSuccess: () => {
+        setIsDirty(false);
+        showFeedback({ type: 'success', message: '¡Cambios guardados!' });
+      },
+      onError: () => {
+        showFeedback({ type: 'error', message: 'Error al guardar los cambios' });
+      },
     });
   };
 
@@ -295,25 +311,23 @@ export function ListDetailPage() {
 
         {unchecked.length === 0 && draftArray.length > 0 && (
           <button
-            onClick={() => {
-              if (
-                !window.confirm(
-                  "¿Cerrar lista? Se agregarán al inventario los productos encontrados y se vaciará la lista.",
-                )
-              )
-                return;
+            onClick={async () => {
+              const ok = await confirm({
+                title: '¿Cerrar lista?',
+                message: 'Se agregarán al inventario los productos encontrados y se vaciará la lista.',
+                confirmLabel: 'Cerrar lista',
+              });
+              if (!ok) return;
 
               const doClose = () => {
                 closeList.mutate(undefined, {
                   onSuccess: () => {
                     setDraftItems({});
                     setIsDirty(false);
+                    showFeedback({ type: 'success', message: '¡Lista cerrada!' });
                   },
-                  onError: (err) => {
-                    console.error("[ui] closeList error", err);
-                    alert(
-                      "Error al cerrar la lista. Revisa la consola y el servidor.",
-                    );
+                  onError: () => {
+                    showFeedback({ type: 'error', message: 'Error al cerrar la lista' });
                   },
                 });
               };
@@ -328,11 +342,8 @@ export function ListDetailPage() {
 
                 silentSync.mutate(payload, {
                   onSuccess: () => doClose(),
-                  onError: (err) => {
-                    console.error("[ui] sync before close failed", err);
-                    alert(
-                      "No se pudieron guardar los cambios. Intenta de nuevo antes de cerrar la lista.",
-                    );
+                  onError: () => {
+                    showFeedback({ type: 'error', message: 'Error al guardar antes de cerrar' });
                   },
                 });
                 return;
@@ -433,6 +444,8 @@ export function ListDetailPage() {
         />
       </div>
 
+      <ConfirmModal {...modalState} />
+
       {/* Mobile overlay */}
       {showInventory && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm md:hidden flex items-end">
@@ -473,6 +486,22 @@ function ListItemRow({
   onRemove: () => void;
   onFail?: () => void;
 }) {
+  const [inputVal, setInputVal] = useState(String(item.quantity));
+
+  // Keep local value in sync when external quantity changes (e.g. +/- buttons)
+  useEffect(() => {
+    setInputVal(String(item.quantity));
+  }, [item.quantity]);
+
+  const commitValue = () => {
+    const parsed = parseInt(inputVal, 10);
+    if (!isNaN(parsed) && parsed >= 0) {
+      onChangeQuantity(parsed);
+    } else {
+      setInputVal(String(item.quantity));
+    }
+  };
+
   return (
     <div className="flex items-center gap-3 bg-white p-3 rounded-2xl border border-stone-200 shadow-sm transition-all">
       <button
@@ -519,9 +548,15 @@ function ListItemRow({
           >
             <Minus className="w-3.5 h-3.5" />
           </button>
-          <span className="w-6 text-center text-xs font-bold text-stone-700">
-            {item.quantity}
-          </span>
+          <input
+            type="number"
+            min={0}
+            value={inputVal}
+            onChange={(e) => setInputVal(e.target.value)}
+            onBlur={commitValue}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.currentTarget.blur(); } }}
+            className="w-8 text-center text-xs font-bold text-stone-700 bg-transparent border-none outline-none appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] cursor-pointer focus:cursor-text"
+          />
           <button
             onClick={() => onChangeQuantity(item.quantity + 1)}
             className="w-6 h-6 flex items-center justify-center text-stone-500 hover:bg-white hover:shadow-sm rounded-md transition-all"

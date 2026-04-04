@@ -15,6 +15,7 @@ export function useProducts() {
         })
         .then((r) => r.data),
     refetchOnMount: 'always',
+    refetchInterval: 1000 * 60, // cada 60s: otro familiar puede actualizar stock
   });
 }
 

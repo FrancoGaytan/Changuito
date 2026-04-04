@@ -3,11 +3,11 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { LoginPage } from '@/pages/auth/LoginPage';
 import { RegisterPage } from '@/pages/auth/RegisterPage';
 import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage';
-import { ListsPage } from '@/pages/ListsPage';
-import { ListDetailPage } from '@/pages/ListDetailPage';
-import { InventoryPage } from '@/pages/InventoryPage';
-import { FamilyPage } from '@/pages/FamilyPage';
-import { JoinFamilyPage } from '@/pages/JoinFamilyPage';
+import { ListsPage } from '@/pages/lists';
+import { ListDetailPage } from '@/pages/list-detail';
+import { InventoryPage } from '@/pages/inventory';
+import { FamilyPage } from '@/pages/family';
+import { JoinFamilyPage } from '@/pages/join-family';
 import { AuthGuard } from './AuthGuard';
 
 export const router = createBrowserRouter([

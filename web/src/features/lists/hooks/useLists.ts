@@ -5,6 +5,7 @@ export function useLists() {
   return useQuery({
     queryKey: ['lists'],
     queryFn: () => listsService.getAll().then((r) => r.data),
+    refetchInterval: 1000 * 30, // cada 30s: ve nuevas listas que creó otro familiar
   });
 }
 
@@ -13,6 +14,7 @@ export function useList(listId: string) {
     queryKey: ['lists', listId],
     queryFn: () => listsService.getById(listId).then((r) => r.data),
     enabled: !!listId,
+    refetchInterval: 1000 * 20, // cada 20s: otro familiar puede modificar la lista
   });
 }
 
@@ -38,6 +40,7 @@ export function useListItems(listId: string) {
     queryKey: ['lists', listId, 'items'],
     queryFn: () => listsService.getItems(listId).then((r) => r.data),
     enabled: !!listId,
+    refetchInterval: 1000 * 20, // cada 20s: ve ítems que agregó/tachó otro familiar
   });
 }
 
