@@ -50,9 +50,6 @@ export function RegisterPage() {
             </span>
           </div>
         </div>
-        <p className="relative z-10 text-emerald-500/80 text-[11px] font-bold tracking-widest uppercase">
-          {l.register.sidePanel.footer}
-        </p>
       </div>
 
       {/* Panel derecho — formulario */}
@@ -156,22 +153,6 @@ export function RegisterPage() {
               </div>
               {errors.confirm && <p className="text-red-500 text-[11px] mt-1.5 ml-1 font-medium">{errors.confirm.message}</p>}
             </div>
-
-            {/* Términos */}
-            <label className="flex items-start gap-3 cursor-pointer select-none pt-2 ml-1">
-              <div className="relative flex items-center justify-center mt-0.5">
-                <input
-                  type="checkbox"
-                  className="w-[18px] h-[18px] peer appearance-none border-2 border-stone-300 rounded-[4px] checked:bg-[#1b5e20] checked:border-[#1b5e20] transition-colors cursor-pointer"
-                  {...register('terms', { required: l.register.terms.error })}
-                />
-                <svg className="absolute w-3 h-3 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              </div>
-              <span className="text-[11.5px] text-stone-500 leading-relaxed font-medium">
-                Acepto los <a href="#" className="underline font-bold text-emerald-700 hover:text-emerald-800">{l.register.terms.termsLink}</a> y la <a href="#" className="underline font-bold text-emerald-700 hover:text-emerald-800">{l.register.terms.privacyLink}</a>.
-              </span>
-            </label>
-            {errors.terms && <p className="text-red-500 text-[11px] ml-1 font-medium leading-none">{errors.terms.message}</p>}
 
             {/* Error del server */}
             {registerMutation.error && (

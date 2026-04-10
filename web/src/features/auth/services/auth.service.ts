@@ -20,7 +20,10 @@ export const authService = {
     api.post<{ user: User; tokens: AuthTokens }>('/auth/register', payload),
 
   forgotPassword: (email: string) =>
-    api.post<void>('/auth/forgot-password', { email }),
+    api.post<{ message: string; code: string | null }>('/auth/forgot-password', { email }),
+
+  resetPassword: (email: string, code: string, newPassword: string) =>
+    api.post<{ message: string }>('/auth/reset-password', { email, code, newPassword }),
 
   me: () => api.get<User>('/auth/me'),
 

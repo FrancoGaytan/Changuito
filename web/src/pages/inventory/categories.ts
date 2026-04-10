@@ -8,6 +8,7 @@ import {
   Beef,
   Croissant,
   Snowflake,
+  Wine,
   MoreHorizontal,
 } from 'lucide-react';
 import type { ProductCategory } from '@/types';
@@ -26,5 +27,6 @@ export const categories: {
   { key: 'carniceria', label: 'Carnicería', icon: Beef },
   { key: 'panaderia', label: 'Panadería', icon: Croissant },
   { key: 'frescos', label: 'Frescos', icon: Snowflake },
+  { key: 'bebidas', label: 'Bebidas', icon: Wine },
   { key: 'otros', label: 'Otros', icon: MoreHorizontal },
 ];

@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
@@ -49,10 +50,46 @@ export class AuthService {
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
-  async forgotPassword(_email: string) {
-    return {
-      message: 'Si el email existe, se envió un enlace de recuperación.',
-    };
+  async forgotPassword(email: string) {
+    const user = await this.userModel.findOne({ email: email.toLowerCase() });
+
+    // Always return same shape to avoid user enumeration
+    if (!user) return { message: 'ok', code: null };
+
+    // Generate 6-digit numeric code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const hashed = await bcrypt.hash(code, 10);
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 min
+
+    await this.userModel.updateOne(
+      { _id: user._id },
+      { resetCode: hashed, resetCodeExpiresAt: expiresAt },
+    );
+
+    // Temporary: return code directly (replace with email sending later)
+    return { message: 'ok', code };
+  }
+
+  async resetPassword(email: string, code: string, newPassword: string) {
+    const user = await this.userModel.findOne({ email: email.toLowerCase() });
+    if (!user || !user.resetCode || !user.resetCodeExpiresAt) {
+      throw new BadRequestException('Código inválido o expirado');
+    }
+
+    if (user.resetCodeExpiresAt < new Date()) {
+      throw new BadRequestException('El código expiró. Solicitá uno nuevo.');
+    }
+
+    const valid = await bcrypt.compare(code, user.resetCode);
+    if (!valid) throw new BadRequestException('Código incorrecto');
+
+    const hashed = await bcrypt.hash(newPassword, 12);
+    await this.userModel.updateOne(
+      { _id: user._id },
+      { password: hashed, resetCode: undefined, resetCodeExpiresAt: undefined },
+    );
+
+    return { message: 'Contraseña actualizada correctamente' };
   }
 
   private generateTokens(userId: string) {

@@ -34,3 +34,15 @@ export function useForgotPassword() {
     mutationFn: (email: string) => authService.forgotPassword(email),
   });
 }
+
+export function useResetPassword() {
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: ({ email, code, newPassword }: { email: string; code: string; newPassword: string }) =>
+      authService.resetPassword(email, code, newPassword),
+    onSuccess: () => {
+      navigate('/login', { replace: true });
+    },
+  });
+}

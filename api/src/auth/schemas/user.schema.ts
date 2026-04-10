@@ -19,6 +19,12 @@ export class User {
 
   @Prop({ type: Types.ObjectId, ref: 'Family' })
   familyId?: Types.ObjectId;
+
+  @Prop()
+  resetCode?: string;
+
+  @Prop()
+  resetCodeExpiresAt?: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

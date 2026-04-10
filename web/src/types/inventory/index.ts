@@ -7,6 +7,7 @@ export type ProductCategory =
   | 'carniceria'
   | 'panaderia'
   | 'frescos'
+  | 'bebidas'
   | 'otros';
 
 export interface Product {

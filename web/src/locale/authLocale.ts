@@ -83,7 +83,7 @@ export const authLocale = {
   },
   forgot: {
     title: '¿Olvidaste tu contraseña?',
-    description: 'Ingresá tu email para recibir un enlace de recuperación.',
+    description: 'Ingresá tu email y te daremos un código de recuperación.',
     email: {
       label: 'Email',
       placeholder: 'ejemplo@correo.com',
@@ -94,7 +94,7 @@ export const authLocale = {
     },
     serverError: 'Algo salió mal. Intentá de nuevo.',
     submit: {
-      default: 'Enviar Enlace →',
+      default: 'Obtener código →',
       pending: 'Enviando...',
     },
     backToLogin: '← Volver al login',
@@ -103,5 +103,36 @@ export const authLocale = {
       description: 'Si el email existe en nuestra base de datos, recibiste un enlace para restablecer tu contraseña.',
       backLink: '← Volver al login',
     },
+  },
+  reset: {
+    title: 'Restablecer contraseña',
+    description: 'Ingresá el código que recibiste y tu nueva contraseña.',
+    code: {
+      label: 'Código de recuperación',
+      errors: { required: 'El código es obligatorio' },
+    },
+    newPassword: {
+      label: 'Nueva contraseña',
+      placeholder: 'Mínimo 6 caracteres',
+      errors: {
+        required: 'La contraseña es obligatoria',
+        minLength: 'Mínimo 6 caracteres',
+      },
+    },
+    confirmPassword: {
+      label: 'Confirmar contraseña',
+      placeholder: 'Repetí la contraseña',
+      errors: {
+        required: 'Confirmá la contraseña',
+        match: 'Las contraseñas no coinciden',
+      },
+    },
+    serverError: 'Código inválido o expirado. Intentá de nuevo.',
+    submit: {
+      default: 'Restablecer contraseña →',
+      pending: 'Guardando...',
+    },
+    backToLogin: '← Volver al login',
+    successTitle: '¡Contraseña actualizada!',
   },
 };

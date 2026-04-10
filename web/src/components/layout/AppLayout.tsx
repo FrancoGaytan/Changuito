@@ -9,7 +9,10 @@ export function AppLayout() {
       <SideNav />
 
       {/* Contenido principal */}
-      <main className="flex-1 overflow-y-auto pb-20 md:pb-0">
+      <main
+        className="flex-1 overflow-y-auto md:pb-0"
+        style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom))' }}
+      >
         <Outlet />
       </main>
 

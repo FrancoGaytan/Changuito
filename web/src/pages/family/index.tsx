@@ -7,6 +7,7 @@ import {
   useRemoveMember,
 } from '@/features/family/hooks/useFamily';
 import { useAuthStore } from '@/store/authStore';
+import { LogOut } from 'lucide-react';
 import { QrScanner } from '@/components/QrScanner';
 import type { FamilyMember } from '@/types';
 import { FamilyLoading } from './FamilyLoading';
@@ -22,7 +23,7 @@ export function FamilyPage() {
   const joinFamily = useJoinFamily();
   const { refetch: fetchQr, data: qrData } = useInviteQr();
   const removeMember = useRemoveMember();
-  const user = useAuthStore((s) => s.user);
+  const { user, clearAuth } = useAuthStore();
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
@@ -143,6 +144,20 @@ export function FamilyPage() {
           onClose={() => setShowScanner(false)}
         />
       )}
+
+      {/* Logout — mobile only, fixed just above the tab bar */}
+      <div
+        className="md:hidden fixed right-4 z-40"
+        style={{ bottom: 'calc(4rem + env(safe-area-inset-bottom) + 0.75rem)' }}
+      >
+        <button
+          onClick={clearAuth}
+          className="flex items-center gap-2 text-xs text-stone-400 hover:text-red-500 transition-colors bg-white/80 backdrop-blur-sm shadow-sm rounded-full px-3 py-1.5 border border-stone-100"
+        >
+          <LogOut className="w-3.5 h-3.5" />
+          Cerrar sesión
+        </button>
+      </div>
     </div>
   );
 }

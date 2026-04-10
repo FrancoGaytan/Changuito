@@ -1,8 +1,23 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 
 const CATEGORIES = [
-  'lacteos', 'almacen', 'limpieza', 'perfumeria',
-  'verduleria', 'carniceria', 'panaderia', 'frescos', 'otros',
+  'lacteos',
+  'almacen',
+  'limpieza',
+  'perfumeria',
+  'verduleria',
+  'carniceria',
+  'panaderia',
+  'frescos',
+  'bebidas',
+  'otros',
 ] as const;
 
 export class CreateProductDto {
