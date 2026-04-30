@@ -390,6 +390,8 @@ export function ListDetailPage() {
           search={inventorySearch}
           onSearch={setInventorySearch}
           onAdd={handleAdd}
+          draftItems={draftItems}
+          onDecrement={(productId) => handleQuantity(productId, -1)}
         />
       </div>
 
@@ -401,6 +403,8 @@ export function ListDetailPage() {
           onSearch={setInventorySearch}
           onAdd={handleAdd}
           onClose={() => setShowInventory(false)}
+          draftItems={draftItems}
+          onDecrement={(productId) => handleQuantity(productId, -1)}
         />
       )}
     </div>

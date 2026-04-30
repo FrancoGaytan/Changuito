@@ -10,9 +10,11 @@ interface Props {
   onSearch: (v: string) => void;
   onAdd: (product: Product) => void;
   onClose: () => void;
+  draftItems: Record<string, { quantity: number }>;
+  onDecrement: (productId: string) => void;
 }
 
-export function MobileInventoryOverlay({ inventorySearch, onSearch, onAdd, onClose }: Props) {
+export function MobileInventoryOverlay({ inventorySearch, onSearch, onAdd, onClose, draftItems, onDecrement }: Props) {
   return (
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm md:hidden flex items-end">
       <div className="bg-white w-full rounded-t-[28px] max-h-[85vh] flex flex-col shadow-2xl">
@@ -30,6 +32,8 @@ export function MobileInventoryOverlay({ inventorySearch, onSearch, onAdd, onClo
             search={inventorySearch}
             onSearch={onSearch}
             onAdd={onAdd}
+            draftItems={draftItems}
+            onDecrement={onDecrement}
           />
         </div>
       </div>
