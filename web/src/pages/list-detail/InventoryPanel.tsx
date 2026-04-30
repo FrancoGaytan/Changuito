@@ -1,4 +1,5 @@
 import { Search, Plus, Minus, Package } from 'lucide-react';
+import { useState } from 'react';
 import { useProducts } from '@/features/inventory/hooks/useInventory';
 import type { Product } from '@/types';
 import { listDetailLocale } from '@/locale/listDetailLocale';
@@ -11,9 +12,48 @@ interface InventoryPanelProps {
   onAdd: (product: Product) => void;
   draftItems: Record<string, { quantity: number }>;
   onDecrement: (productId: string) => void;
+  onSetQuantity: (product: Product, qty: number) => void;
 }
 
-export function InventoryPanel({ search, onSearch, onAdd, draftItems, onDecrement }: InventoryPanelProps) {
+function QtyInput({
+  product,
+  qty,
+  onSetQuantity,
+}: {
+  product: Product;
+  qty: number;
+  onSetQuantity: (product: Product, qty: number) => void;
+}) {
+  const [localValue, setLocalValue] = useState(String(qty));
+
+  // Sync when external qty changes (e.g. +/- buttons) while not focused
+  const inputId = `inv-qty-${product.id}`;
+  if (String(qty) !== localValue && document.activeElement?.id !== inputId) {
+    setLocalValue(String(qty));
+  }
+
+  const commit = (raw: string) => {
+    const parsed = parseInt(raw, 10);
+    const final = isNaN(parsed) || parsed < 0 ? 0 : parsed;
+    onSetQuantity(product, final);
+    setLocalValue(String(final === 0 ? qty : final));
+  };
+
+  return (
+    <input
+      id={inputId}
+      type="number"
+      min={0}
+      value={localValue}
+      onChange={(e) => setLocalValue(e.target.value)}
+      onBlur={(e) => commit(e.target.value)}
+      onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+      className="w-12 text-center text-sm font-semibold text-emerald-700 bg-transparent border-none outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+    />
+  );
+}
+
+export function InventoryPanel({ search, onSearch, onAdd, draftItems, onDecrement, onSetQuantity }: InventoryPanelProps) {
   const { data: products, isLoading } = useProducts();
 
   const filtered = (products ?? []).filter((p: Product) =>
@@ -72,18 +112,20 @@ export function InventoryPanel({ search, onSearch, onAdd, draftItems, onDecremen
                   {product.category} · {product.stock} {product.unit}
                 </p>
               </div>
-              <div className="flex items-center gap-1.5 flex-shrink-0">
+              <div className="flex items-center gap-1 flex-shrink-0">
                 {qty > 0 && (
                   <>
                     <button
                       onClick={() => onDecrement(product.id)}
-                      className="w-7 h-7 rounded-lg bg-stone-100 hover:bg-red-100 flex items-center justify-center transition-colors"
+                      className="w-7 h-7 rounded-lg bg-stone-100 hover:bg-red-100 flex items-center justify-center transition-colors flex-shrink-0"
                     >
-                      <Minus className="w-3.5 h-3.5 text-stone-500 hover:text-red-600" />
+                      <Minus className="w-3.5 h-3.5 text-stone-500" />
                     </button>
-                    <span className="w-5 text-center text-sm font-semibold text-emerald-700">
-                      {qty}
-                    </span>
+                    <QtyInput
+                      product={product}
+                      qty={qty}
+                      onSetQuantity={onSetQuantity}
+                    />
                   </>
                 )}
                 <button

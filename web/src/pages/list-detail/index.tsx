@@ -106,6 +106,28 @@ export function ListDetailPage() {
     setIsDirty(true);
   };
 
+  const handleSetQuantity = (product: Product, qty: number) => {
+    if (qty <= 0) {
+      setDraftItems((prev) => {
+        const copy = { ...prev };
+        delete copy[product.id];
+        return copy;
+      });
+    } else {
+      setDraftItems((prev) => {
+        const existing = prev[product.id];
+        if (existing) {
+          return { ...prev, [product.id]: { ...existing, quantity: qty } };
+        }
+        return {
+          ...prev,
+          [product.id]: { productId: product.id, product, quantity: qty, checked: false },
+        };
+      });
+    }
+    setIsDirty(true);
+  };
+
   const handleCheck = (productId: string) => {
     setDraftItems((prev) => ({
       ...prev,
@@ -392,6 +414,7 @@ export function ListDetailPage() {
           onAdd={handleAdd}
           draftItems={draftItems}
           onDecrement={(productId) => handleQuantity(productId, -1)}
+          onSetQuantity={handleSetQuantity}
         />
       </div>
 
@@ -405,6 +428,7 @@ export function ListDetailPage() {
           onClose={() => setShowInventory(false)}
           draftItems={draftItems}
           onDecrement={(productId) => handleQuantity(productId, -1)}
+          onSetQuantity={handleSetQuantity}
         />
       )}
     </div>

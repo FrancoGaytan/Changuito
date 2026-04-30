@@ -12,9 +12,10 @@ interface Props {
   onClose: () => void;
   draftItems: Record<string, { quantity: number }>;
   onDecrement: (productId: string) => void;
+  onSetQuantity: (product: Product, qty: number) => void;
 }
 
-export function MobileInventoryOverlay({ inventorySearch, onSearch, onAdd, onClose, draftItems, onDecrement }: Props) {
+export function MobileInventoryOverlay({ inventorySearch, onSearch, onAdd, onClose, draftItems, onDecrement, onSetQuantity }: Props) {
   return (
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm md:hidden flex items-end">
       <div className="bg-white w-full rounded-t-[28px] max-h-[85vh] flex flex-col shadow-2xl">
@@ -34,6 +35,7 @@ export function MobileInventoryOverlay({ inventorySearch, onSearch, onAdd, onClo
             onAdd={onAdd}
             draftItems={draftItems}
             onDecrement={onDecrement}
+            onSetQuantity={onSetQuantity}
           />
         </div>
       </div>
