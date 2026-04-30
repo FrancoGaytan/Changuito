@@ -77,6 +77,7 @@ export function ListDetailPage() {
     if (items && !isDirty) {
       const draft: Record<string, any> = {};
       items.forEach((i) => {
+        if (!i.product) return;
         draft[i.product.id] = {
           itemId: i.id,
           productId: i.product.id,
