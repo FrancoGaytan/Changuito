@@ -369,6 +369,9 @@ export class ListsService {
     const listObjectId = new Types.ObjectId(listId);
     const items = await this.listItemModel.find({ listId: listObjectId });
 
+    // Save failed items to re-add after clearing
+    const failedItems = items.filter((item) => item.failed);
+
     // For items that are NOT failed, increment product stock
     for (const item of items) {
       if (item.failed) continue;
@@ -381,6 +384,20 @@ export class ListsService {
 
     // Remove all items from the list
     await this.listItemModel.deleteMany({ listId: listObjectId });
+
+    // Re-add failed items as pending (unchecked, not failed) for next trip
+    if (failedItems.length > 0) {
+      await this.listItemModel.insertMany(
+        failedItems.map((item) => ({
+          listId: listObjectId,
+          productId: item.productId,
+          quantity: item.quantity,
+          checked: false,
+          failed: false,
+          addedBy: item.addedBy,
+        })),
+      );
+    }
 
     await this.listModel.updateOne(
       { _id: listObjectId },
